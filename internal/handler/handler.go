@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -35,6 +36,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	price, err := h.service.GetPrice(ticker, d)
 	if err != nil {
+		log.Printf("error while getting a price: %v", err)
 		writeResponse(w, http.StatusInternalServerError, model.Error{"Internal server error"})
 		return
 	}

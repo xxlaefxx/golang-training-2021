@@ -24,6 +24,24 @@ func (s *stockAPIResponse) UnmarshalJSON(raw []byte) error {
 		return err
 	}
 
+	// Common error messages (wrong ticker)
+	errMsg, ok := i["Error Message"].(string)
+	if ok {
+		return fmt.Errorf("alphavantage error: %v", errMsg)
+	}
+
+	// Too many requests per minute
+	noteMsg, ok := i["Note"].(string)
+	if ok {
+		return fmt.Errorf("alphavantage error: %v", noteMsg)
+	}
+
+	// Invalid key (like demo) or something else
+	infoMsg, ok := i["Information"].(string)
+	if ok {
+		return fmt.Errorf("alphavantage error: %v", infoMsg)
+	}
+
 	tsd, ok := i["Time Series (Daily)"].(map[string]interface{})
 	if !ok {
 		return errUnexpectedJSON
