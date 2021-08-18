@@ -18,11 +18,13 @@ docker-build:
 docker-run:
 	@docker run \
 		--name stock-service \
-		-d \
+		-it \
 		--rm \
 		-p 80:8080 \
 		-v `pwd`/secret:/secret \
 		-e EXTERNAL_API_TOKEN=/secret/.token \
+		-e DB_CONN_STRING=/secret/.db_conn \
+		-e SECRET=/secret/.jwt_secret \
 		stock-service
 
 .PHONY: docker-stop
@@ -45,3 +47,11 @@ run-db:
 		-e POSTGRES_USER=postgres \
 		-e POSTGRES_PASSWORD=postgres \
 		postgres:12
+
+.PHONY: run-stack
+run-stack:
+	@docker stack deploy -c docker-stack.yaml stock-price
+
+.PHONY: stop-stack
+stop-stack:
+	@docker stack rm stock-price
